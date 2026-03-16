@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mocons</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: #f8f6f1;
+      color: #1a1a1a;
+    }
+
+    /* ── NAV ── */
+    nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 20px 48px;
+      border-bottom: 0.5px solid rgba(26,26,26,0.1);
+      background: #f8f6f1;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .nav-logo {
+      font-size: 15px;
+      font-weight: 500;
+      letter-spacing: 0.2em;
+      color: #1a1a1a;
+      text-transform: uppercase;
+      cursor: pointer;
+      /* 로고 이미지로 교체 시 아래 img 태그 사용:
+         <img src="mocons-logo.png" alt="Mocons" style="height:28px;" /> */
+    }
+    .nav-links { display: flex; gap: 36px; }
+    .nav-link {
+      font-size: 12px;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: rgba(26,26,26,0.4);
+      cursor: pointer;
+      padding: 4px 0;
+      border-bottom: 0.5px solid transparent;
+      transition: color 0.2s;
+    }
+    .nav-link:hover { color: #1a1a1a; }
+    .nav-link.active { color: #1a1a1a; border-bottom-color: #1a1a1a; }
+
+    /* ── PAGE ── */
+    .page { display: none; }
+    .page.active { display: block; }
+
+    /* ── HERO ── */
+    .hero {
+      padding: 100px 48px 120px;
+      min-height: 480px;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      position: relative;
+      overflow: hidden;
+      background: #1a1a1a;
+    }
+    .hero-accent {
+      position: absolute; top: 40px; right: 60px;
+      width: 220px; height: 220px;
+      border: 0.5px solid rgba(245,240,232,0.06);
+      border-radius: 50%;
+      pointer-events: none;
+    }
+    .hero-accent2 {
+      position: absolute; top: 80px; right: 100px;
+      width: 140px; height: 140px;
+      border: 0.5px solid rgba(245,240,232,0.04);
+      border-radius: 50%;
+      pointer-events: none;
+    }
+    .hero-tag {
+      font-size: 10px;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: rgba(245,240,232,0.35);
+      margin-bottom: 24px;
+      position: relative;
+    }
+    .hero-title {
+      font-size: 48px;
+      font-weight: 400;
+      line-height: 1.15;
+      color: #f5f0e8;
+      letter-spacing: -0.01em;
+      position: relative;
+      max-width: 600px;
+    }
+    .hero-title em { font-style: italic; color: rgba(245,240,232,0.5); }
+    .hero-sub-en {
+      margin-top: 20px;
+      font-size: 13px;
+      color: rgba(245,240,232,0.55);
+      line-height: 1.7;
+      max-width: 480px;
+      position: relative;
+    }
+    .hero-sub-kr {
+      margin-top: 6px;
+      font-size: 12px;
+      color: rgba(245,240,232,0.25);
+      line-height: 1.7;
+      max-width: 480px;
+      position: relative;
+    }
+    .hero-cta { margin-top: 48px; display: flex; gap: 16px; position: relative; }
+    .btn-p {
+      font-size: 11px;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: #1a1a1a;
+      background: #f5f0e8;
+      padding: 10px 24px;
+      cursor: pointer;
+      border: none;
+    }
+    .btn-s {
+      font-size: 11px;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: rgba(245,240,232,0.6);
+      background: transparent;
+      padding: 10px 24px;
+      cursor: pointer;
+      border: 0.5px solid rgba(245,240,232,0.25);
+    }
+
+    /* ── SECTION ── */
+    .section {
+      padding: 56px 48px;
+      border-bottom: 0.5px solid rgba(26,26,26,0.08);
+      background: #f8f6f1;
+    }
+    .section:last-child { border-bottom: none; }
+    .sl-en {
+      font-size: 10px;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: rgba(26,26,26,0.35);
+    }
+    .sl-kr {
+      font-size: 10px;
+      color: rgba(26,26,26,0.2);
+      margin-top: 3px;
+      margin-bottom: 28px;
+    }
+    .st-en { font-size: 26px; font-weight: 400; color: #1a1a1a; line-height: 1.25; max-width: 500px; }
+    .st-kr { font-size: 14px; color: rgba(26,26,26,0.35); line-height: 1.5; max-width: 500px; margin-top: 8px; }
+    .body-en { font-size: 13px; color: rgba(26,26,26,0.6); line-height: 1.8; max-width: 520px; margin-top: 20px; }
+    .body-kr { font-size: 12px; color: rgba(26,26,26,0.3); line-height: 1.8; max-width: 520px; margin-top: 8px; }
+    .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 56px; align-items: start; }
+
+    /* ── INFO TABLE ── */
+    .info-table { margin-top: 32px; border-top: 0.5px solid rgba(26,26,26,0.08); }
+    .info-row { display: flex; gap: 24px; padding: 13px 0; border-bottom: 0.5px solid rgba(26,26,26,0.06); }
+    .info-key {
+      font-size: 10px;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: rgba(26,26,26,0.3);
+      min-width: 80px;
+      margin-top: 2px;
+    }
+    .iv-en { font-size: 13px; color: rgba(26,26,26,0.7); }
+    .iv-kr { font-size: 11px; color: rgba(26,26,26,0.3); margin-top: 2px; }
+
+    /* ── MOVE GRID ── */
+    .move-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0; border: 0.5px solid rgba(26,26,26,0.1); }
+    .move-card {
+      padding: 24px;
+      border-right: 0.5px solid rgba(26,26,26,0.08);
+      border-bottom: 0.5px solid rgba(26,26,26,0.08);
+      background: #f8f6f1;
+    }
+    .move-card:nth-child(2n) { border-right: none; }
+    .move-card:nth-child(3), .move-card:nth-child(4) { border-bottom: none; }
+    .ml { font-size: 26px; color: rgba(26,26,26,0.08); margin-bottom: 12px; }
+    .mt-en { font-size: 12px; color: #1a1a1a; margin-bottom: 3px; }
+    .mt-kr { font-size: 11px; color: rgba(26,26,26,0.3); }
+
+    /* ── CONTACT ── */
+    .c-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 24px; margin-top: 32px; }
+    .ct { font-size: 10px; letter-spacing: 0.15em; text-transform: uppercase; color: rgba(26,26,26,0.3); margin-bottom: 8px; }
+    .cv { font-size: 13px; color: rgba(26,26,26,0.7); line-height: 1.6; }
+    .cv-kr { font-size: 11px; color: rgba(26,26,26,0.3); margin-top: 3px; line-height: 1.5; }
+
+    /* ── BRAND ── */
+    .brand-header { padding: 56px 48px 32px; background: #f8f6f1; }
+    .brand-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0; border-top: 0.5px solid rgba(26,26,26,0.08); }
+    .brand-card {
+      border-right: 0.5px solid rgba(26,26,26,0.08);
+      padding: 48px;
+      min-height: 280px;
+      background: #f8f6f1;
+      transition: background 0.2s;
+    }
+    .brand-card:last-child { border-right: none; }
+    .brand-card:hover { background: #f0ece4; }
+    .bla {
+      width: 56px; height: 56px;
+      border: 0.5px solid rgba(26,26,26,0.12);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 28px;
+      /* 로고 이미지로 교체 시:
+         <img src="grom-logo.png" alt="Grom" style="width:48px;height:48px;object-fit:contain;" /> */
+    }
+    .bi { font-size: 20px; color: rgba(26,26,26,0.3); }
+    .bn { font-size: 22px; color: #1a1a1a; font-weight: 400; margin-bottom: 6px; letter-spacing: 0.05em; }
+    .bc { font-size: 10px; letter-spacing: 0.15em; text-transform: uppercase; color: rgba(26,26,26,0.25); margin-bottom: 16px; }
+    .bd-en { font-size: 13px; color: rgba(26,26,26,0.55); line-height: 1.7; }
+    .bd-kr { font-size: 12px; color: rgba(26,26,26,0.25); line-height: 1.7; margin-top: 6px; }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 768px) {
+      nav { padding: 16px 24px; }
+      .hero { padding: 60px 24px 80px; }
+      .hero-title { font-size: 32px; }
+      .section { padding: 40px 24px; }
+      .two-col { grid-template-columns: 1fr; gap: 40px; }
+      .c-grid { grid-template-columns: 1fr; gap: 24px; }
+      .brand-grid { grid-template-columns: 1fr; }
+      .brand-card { border-right: none; border-bottom: 0.5px solid rgba(26,26,26,0.08); }
+      .move-grid { grid-template-columns: 1fr; }
+      .move-card:nth-child(2n) { border-right: none; }
+      .brand-header { padding: 40px 24px 24px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ── NAV ── -->
+  <nav>
+    <div class="nav-logo" id="goHome">Mocons</div>
+    <!-- 로고 이미지 사용 시 위 div 안에 아래 코드로 교체:
+    <img src="mocons-logo.png" alt="Mocons" style="height:28px;cursor:pointer;" id="goHome" /> -->
+    <div class="nav-links">
+      <div class="nav-link" id="lkCo">Company</div>
+      <div class="nav-link" id="lkBr">Brand</div>
+    </div>
+  </nav>
+
+  <!-- ── HOME ── -->
+  <div class="page active" id="page-home">
+    <div class="hero">
+      <div class="hero-accent"></div>
+      <div class="hero-accent2"></div>
+      <div class="hero-tag">Curating Brands for Better Living</div>
+      <div class="hero-title">We find the brands<br>that <em>enrich your life.</em></div>
+      <div class="hero-sub-en">We discover and nurture competitive brands to deliver genuine value to customers' lives.</div>
+      <div class="hero-sub-kr">경쟁력 있는 브랜드를 발굴하고 육성하여 고객의 삶에 진정한 가치를 더합니다.</div>
+      <div class="hero-cta">
+        <div class="btn-p" id="toBrand">Our Brands</div>
+        <div class="btn-s" id="toCo">About Us</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── COMPANY ── -->
+  <div class="page" id="page-company">
+    <div class="section">
+      <div class="sl-en">About Mocons</div>
+      <div class="sl-kr">회사 소개</div>
+      <div class="two-col">
+        <div>
+          <div class="st-en">Elevating Everyday Life<br>Through Honest Quality</div>
+          <div class="st-kr">정직한 품질로 삶의 가치를 높이는 기업</div>
+          <div class="body-en">Mocons discovers and develops competitive businesses, making quality products accessible to customers wherever they are. We grow together as a company that contributes to society.</div>
+          <div class="body-kr">Mocons는 경쟁력 있는 사업을 발굴하고 육성하여, 정직한 품질의 제품을 고객이 원하는 곳 어디서든 만날 수 있도록 합니다.</div>
+          <div class="info-table">
+            <div class="info-row">
+              <div class="info-key">Company</div>
+              <div>
+                <div class="iv-en">Mocons Co., Ltd.</div>
+                <div class="iv-kr">모컨스</div>
+              </div>
+            </div>
+            <div class="info-row">
+              <div class="info-key">Business</div>
+              <div>
+                <div class="iv-en">Global Import · Brand Development · Omni-channel Distribution</div>
+                <div class="iv-kr">글로벌 제품 수입 · 브랜드화 · 온·오프라인 유통</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div>
+          <div class="sl-en">Our Values — MOVE</div>
+          <div class="sl-kr">핵심 가치</div>
+          <div class="move-grid">
+            <div class="move-card">
+              <div class="ml">M</div>
+              <div class="mt-en">Making an Epoch</div>
+              <div class="mt-kr">새로운 시대를 개척하는 정신</div>
+            </div>
+            <div class="move-card">
+              <div class="ml">O</div>
+              <div class="mt-en">Openness</div>
+              <div class="mt-kr">늘 열린 마음으로 협력하는 자세</div>
+            </div>
+            <div class="move-card">
+              <div class="ml">V</div>
+              <div class="mt-en">Value</div>
+              <div class="mt-kr">고객의 가치를 존중하는 마음</div>
+            </div>
+            <div class="move-card">
+              <div class="ml">E</div>
+              <div class="mt-en">Endless Challenge</div>
+              <div class="mt-kr">끊임없이 도전하는 행동</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="section">
+      <div class="sl-en">Contact</div>
+      <div class="sl-kr">문의</div>
+      <div class="c-grid">
+        <div>
+          <div class="ct">General Inquiry</div>
+          <div class="cv">support@mocons.com</div>
+          <div class="cv-kr">일반 문의</div>
+        </div>
+        <div>
+          <div class="ct">Partnership</div>
+          <div class="cv">salesteam@mocons.com</div>
+          <div class="cv-kr">파트너십 문의</div>
+        </div>
+        <div>
+          <div class="ct">Address</div>
+          <div class="cv">89 Baekjegobn-ro, 4F<br>Songpa-gu, Seoul, Korea</div>
+          <div class="cv-kr">서울특별시 송파구 백제고분로 89, 4층</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── BRAND ── -->
+  <div class="page" id="page-brand">
+    <div class="brand-header">
+      <div class="sl-en">Brand Portfolio</div>
+      <div class="sl-kr">운영 브랜드</div>
+      <div class="st-en" style="margin-top:16px;">Brands We Build</div>
+      <div class="st-kr">Mocons가 운영하는 브랜드</div>
+    </div>
+    <div class="brand-grid">
+      <div class="brand-card">
+        <div class="bla">
+          <!-- 로고 이미지 사용 시 아래 주석 해제 후 bi div 삭제:
+          <img src="grom-logo.png" alt="Grom" style="width:48px;height:48px;object-fit:contain;" /> -->
+          <div class="bi">G</div>
+        </div>
+        <div class="bn">Grom</div>
+        <div class="bc">Home Living</div>
+        <div class="bd-en">A lifestyle appliance brand that turns your home into a living, breathing space — growing with everyday life.</div>
+        <div class="bd-kr">집이 살아 숨쉬는 공간이 되도록, 라이프스타일 가전으로 일상의 성장을 만드는 브랜드</div>
+      </div>
+      <div class="brand-card">
+        <div class="bla">
+          <!-- 로고 이미지 사용 시 아래 주석 해제 후 bi div 삭제:
+          <img src="gutmann-logo.png" alt="Gutmann" style="width:48px;height:48px;object-fit:contain;" /> -->
+          <div class="bi">G</div>
+        </div>
+        <div class="bn">Gutmann</div>
+        <div class="bc">Kitchen</div>
+        <div class="bd-en">Induction-dedicated cookware that solves the real problems of induction users.</div>
+        <div class="bd-kr">인덕션 사용자의 불편함을 해소하는 전용 주방용기 브랜드</div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      function go(page) {
+        document.querySelectorAll('.page').forEach(function (p) { p.classList.remove('active'); });
+        document.querySelectorAll('.nav-link').forEach(function (l) { l.classList.remove('active'); });
+        document.getElementById('page-' + page).classList.add('active');
+        if (page !== 'home') {
+          document.getElementById(page === 'company' ? 'lkCo' : 'lkBr').classList.add('active');
+        }
+        window.scrollTo(0, 0);
+      }
+      document.getElementById('goHome').onclick = function () { go('home'); };
+      document.getElementById('lkCo').onclick = function () { go('company'); };
+      document.getElementById('lkBr').onclick = function () { go('brand'); };
+      document.getElementById('toBrand').onclick = function () { go('brand'); };
+      document.getElementById('toCo').onclick = function () { go('company'); };
+    })();
+  </script>
+
+</body>
+</html>
